@@ -1,0 +1,15 @@
+{
+  "name": "@jatsi/engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/GameEngine.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "tsc --project tsconfig.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  }
+}
