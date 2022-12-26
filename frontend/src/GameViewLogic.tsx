@@ -1,28 +1,36 @@
-import {GameEngine, GamePhase, GameState} from '@jatsi/engine'
+import {GameState} from '@jatsi/engine'
 import {useCallback, useEffect, useState} from 'react'
-import {gameContext, gameStateContext} from './gameContext'
+import {gameEngineContext, gameStateContext} from './gameContext'
 import {PreGameView} from './PreGameView/PreGameView'
 import React from 'react'
 import {Player} from './PreGameView/PlayerList'
-import {useLocalStoragePersistedState} from './hooks/useLocalStoragePersistedState'
 import {GameBoard} from './GameBoard/GameBoard'
 import {SecondaryButton} from './components/SecondaryButton'
+import {GameEngineAdapter} from './business/GameEngineAdapter'
+import {LocalGameEngineAdapter} from './business/LocalGameEngineAdapter'
+import {usePersistedEngine} from './hooks/usePersistedEngine'
+import {LoadingIndicator} from './components/LoadingIndicator'
 
 export const GameViewLogic: React.FC = () => {
-  const [gameEngine, setGameEngine] = useState<GameEngine | null>(null)
-  const [gameState, setGameState] = useLocalStoragePersistedState<GameState | null>('jatsi-state', null)
+  const [gameEngine, setGameEngine] = useState<GameEngineAdapter | null>(null)
+  const [gameState, setGameState] = useState<GameState | null>(null)
 
-  const handleStartGame = useCallback((players: Player[]) => {
-    const engine = new GameEngine({
-      players,
-      rules: {
-        variant: 'traditional',
-        maxThrows: 3,
-      },
-    })
-    engine.start()
-    setGameEngine(engine)
-  }, [])
+  const [persistedEngine, setPersistedEngine] = usePersistedEngine()
+  const [loading, setLoading] = useState(false)
+  const handleStartGame = useCallback(
+    (players: Player[]) => {
+      const engine = new LocalGameEngineAdapter({
+        players,
+        rules: {
+          variant: 'traditional',
+          maxThrows: 3,
+        },
+      })
+      engine.start()
+      setPersistedEngine(engine)
+    },
+    [setPersistedEngine]
+  )
 
   const updateGameState = useCallback(
     (state: GameState) => {
@@ -32,20 +40,26 @@ export const GameViewLogic: React.FC = () => {
   )
 
   useEffect(() => {
-    if (gameState && !gameEngine) {
-      if (gameState.phase !== GamePhase.PLAYING) {
-        setGameState(null)
-      } else {
-        setGameEngine(GameEngine.resumeFrom(gameState))
-      }
+    if (persistedEngine && !gameEngine) {
+      setLoading(true)
+      persistedEngine.tryResume().then(
+        () => {
+          setGameEngine(persistedEngine)
+          setLoading(false)
+        },
+        () => {
+          setPersistedEngine(null)
+          setLoading(false)
+        }
+      )
     }
-  }, [gameEngine, gameState, setGameState])
+  }, [gameEngine, gameState, persistedEngine, setGameState, setPersistedEngine])
 
   useEffect(() => {
     if (!gameEngine) return
     gameEngine.onStateUpdated(updateGameState)
 
-    updateGameState(gameEngine.gameState)
+    updateGameState(gameEngine.getGameState())
     return () => {
       gameEngine.offStateUpdated(updateGameState)
     }
@@ -56,18 +70,20 @@ export const GameViewLogic: React.FC = () => {
     setGameEngine(null)
   }, [setGameState])
 
+  if (loading) return <LoadingIndicator />
+
   if (!gameEngine || !gameState) {
     return <PreGameView onStartGame={handleStartGame} />
   }
 
   return (
-    <gameContext.Provider value={gameEngine}>
+    <gameEngineContext.Provider value={gameEngine}>
       <gameStateContext.Provider value={gameState}>
         <SecondaryButton className="absolute right-2 top-3" onClick={exit}>
           Exit
         </SecondaryButton>
         <GameBoard />
       </gameStateContext.Provider>
-    </gameContext.Provider>
+    </gameEngineContext.Provider>
   )
 }

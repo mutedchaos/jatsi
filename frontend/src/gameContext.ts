@@ -1,7 +1,8 @@
 import React, {useContext} from 'react'
-import {GameEngine, GameState} from '@jatsi/engine'
+import {GameState} from '@jatsi/engine'
+import {GameEngineAdapter} from './business/GameEngineAdapter'
 
-export const gameContext = React.createContext<GameEngine | null>(null)
+export const gameEngineContext = React.createContext<GameEngineAdapter | null>(null)
 export const gameStateContext = React.createContext<GameState | null>(null)
 
 export function useGameState() {
@@ -11,7 +12,7 @@ export function useGameState() {
 }
 
 export function useGameEngine() {
-  const value = useContext(gameContext)
+  const value = useContext(gameEngineContext)
   if (!value) throw new Error('No game engine')
   return value
 }

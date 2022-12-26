@@ -4,6 +4,7 @@ import {useGameEngine, useGameState} from '../gameContext'
 import ReactDice from 'react-dice-complete'
 import 'react-dice-complete/dist/react-dice-complete.css'
 import {PrimaryButton} from '../components/PrimaryButton'
+import {getLatestDice} from '../business/getLatestDice'
 
 export const CurrentTurn: React.FC = () => {
   const state = useGameState()
@@ -19,12 +20,12 @@ export const CurrentTurn: React.FC = () => {
 
   const diceRefs = [useRef<any>(null), useRef<any>(null), useRef<any>(null), useRef<any>(null), useRef<any>(null)]
 
-  const rollDice = useCallback(() => {
+  const rollDice = useCallback(async () => {
     setRolled(true)
     setRolling(true)
     setShaking(false)
     activelyRolling.current = true
-    const results = engine.prepareRoll()
+    const results = await engine.prepareRoll()
     diceRefs.forEach((dice, i) => {
       if (!state.currentTurn.locked.includes(i)) {
         return dice.current.rollAll([results[i]])
@@ -71,7 +72,7 @@ export const CurrentTurn: React.FC = () => {
               faceColor={state.currentTurn.locked.includes(i) ? 'orange' : shaking ? '#edd' : '#eee'}
               dotColor="black"
               rollTime={rolled ? 1 : 0}
-              defaultRoll={engine.latestDice[i] ?? i + 1}
+              defaultRoll={getLatestDice(state)[i] ?? i + 1}
             />
           </div>
         ))}

@@ -4,7 +4,7 @@ import {ScoreCellContent} from './ScoreCellContent'
 
 export const ScoreBoard: React.FC<{player: number}> = ({player}) => {
   const state = useGameState()
-  const {rules} = useGameEngine()
+  const rules = useGameEngine().getRules()
   const grid = useMemo(() => rules.getCellGrid(), [rules])
   const {maxX, maxY} = useMemo(() => {
     const maxX = Math.max(...grid.map((x) => x.x))

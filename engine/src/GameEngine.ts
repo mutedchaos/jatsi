@@ -99,6 +99,8 @@ export class GameEngine {
     if (this.gameState.currentTurn.throws.length >= this.gameState.rules.maxThrows)
       throw new Error('Max throws reached')
 
+    if (this.nextRoll.length) throw new Error('A roll has already been prepared')
+
     this.nextRoll = [
       this.gameState.currentTurn.locked.includes(0) ? this.latestDice[0] : Math.floor(Math.random() * 6) + 1,
       this.gameState.currentTurn.locked.includes(1) ? this.latestDice[1] : Math.floor(Math.random() * 6) + 1,
