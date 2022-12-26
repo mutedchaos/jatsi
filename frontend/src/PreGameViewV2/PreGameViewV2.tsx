@@ -2,6 +2,7 @@ import React, {useCallback} from 'react'
 import {GameEngineAdapter} from '../business/GameEngineAdapter'
 import {useLocalStoragePersistedState} from '../hooks/useLocalStoragePersistedState'
 import {SetupLocalGame} from './LocalGame/SetupLocalGame'
+import {SetupOnlineGame} from './OnlineGame/SetupOnlineGame'
 
 interface Props {
   onStartGame(engine: GameEngineAdapter): void
@@ -51,7 +52,11 @@ export const PreGameViewV2: React.FC<Props> = ({onStartGame}) => {
         </label>
       </div>
       <hr className="my-4" />
-      {gameType === 'local' && <SetupLocalGame onStartGame={onStartGame} />}
+      {gameType === 'local' ? (
+        <SetupLocalGame onStartGame={onStartGame} />
+      ) : (
+        <SetupOnlineGame host={gameType === 'online-host'} onStartGame={onStartGame} />
+      )}
     </div>
   )
 }

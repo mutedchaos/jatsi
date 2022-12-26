@@ -14,8 +14,13 @@ export enum GamePhase {
   GAMEOVER = 'GAMEOVER',
 }
 
+export interface Player {
+  name: string
+  color: string
+}
+
 export interface GameState {
-  players: Array<{name: string; color: string}>
+  players: Array<Player>
   rules: {
     variant: 'traditional'
     maxThrows: number

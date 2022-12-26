@@ -16,7 +16,11 @@ export function useLocalStoragePersistedState<TState>(
 function loadPersistedState<TState>(storageName: string, defaultState: TState) {
   const item = localStorage.getItem(storageName)
   if (!item) return defaultState
-  return JSON.parse(item)
+  try {
+    return JSON.parse(item)
+  } catch (err) {
+    return defaultState
+  }
 }
 
 function persistState(storageName: string, newState: unknown) {

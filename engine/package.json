@@ -2,7 +2,7 @@
   "name": "@jatsi/engine",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/GameEngine.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "tsc --project tsconfig.json"
