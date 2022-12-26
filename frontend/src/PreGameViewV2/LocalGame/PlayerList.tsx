@@ -1,7 +1,7 @@
 import {GameState} from '@jatsi/engine'
 import React, {useCallback, useState} from 'react'
-import {DeleteButton} from '../components/DeleteButton'
-import {SecondaryButton} from '../components/SecondaryButton'
+import {DeleteButton} from '../../components/DeleteButton'
+import {SecondaryButton} from '../../components/SecondaryButton'
 
 export type Player = GameState['players'][number]
 
@@ -34,7 +34,7 @@ export const PlayerList: React.FC<Props> = ({players, onAddPlayer, onRemovePlaye
 
   return (
     <div>
-      <h3 className="separator">Players</h3>
+      <h4 className="separator">Players</h4>
       <div className="separator">
         <ul>
           {players.map((player, i) => (

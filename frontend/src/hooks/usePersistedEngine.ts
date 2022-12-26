@@ -20,10 +20,14 @@ export function usePersistedEngine(): [null | GameEngineAdapter, (engine: GameEn
 
   const updateEngine = useCallback(
     (engine: GameEngineAdapter | null) => {
-      const adapterInfo = knownAdapters.find((ka) => engine instanceof ka.adapter)
-      if (!adapterInfo) throw new Error('Unknown adapter')
+      if (!engine) {
+        setVariant(null)
+      } else {
+        const adapterInfo = knownAdapters.find((ka) => engine instanceof ka.adapter)
+        if (!adapterInfo) throw new Error('Unknown adapter')
 
-      setVariant(adapterInfo.key)
+        setVariant(adapterInfo.key)
+      }
     },
     [setVariant]
   )

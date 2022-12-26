@@ -1,15 +1,13 @@
 import {GameState} from '@jatsi/engine'
 import {useCallback, useEffect, useState} from 'react'
 import {gameEngineContext, gameStateContext} from './gameContext'
-import {PreGameView} from './PreGameView/PreGameView'
 import React from 'react'
-import {Player} from './PreGameView/PlayerList'
 import {GameBoard} from './GameBoard/GameBoard'
 import {SecondaryButton} from './components/SecondaryButton'
 import {GameEngineAdapter} from './business/GameEngineAdapter'
-import {LocalGameEngineAdapter} from './business/LocalGameEngineAdapter'
 import {usePersistedEngine} from './hooks/usePersistedEngine'
 import {LoadingIndicator} from './components/LoadingIndicator'
+import {PreGameViewV2} from './PreGameViewV2/PreGameViewV2'
 
 export const GameViewLogic: React.FC = () => {
   const [gameEngine, setGameEngine] = useState<GameEngineAdapter | null>(null)
@@ -18,14 +16,7 @@ export const GameViewLogic: React.FC = () => {
   const [persistedEngine, setPersistedEngine] = usePersistedEngine()
   const [loading, setLoading] = useState(false)
   const handleStartGame = useCallback(
-    (players: Player[]) => {
-      const engine = new LocalGameEngineAdapter({
-        players,
-        rules: {
-          variant: 'traditional',
-          maxThrows: 3,
-        },
-      })
+    (engine: GameEngineAdapter) => {
       engine.start()
       setPersistedEngine(engine)
     },
@@ -66,14 +57,15 @@ export const GameViewLogic: React.FC = () => {
   }, [gameEngine, updateGameState])
 
   const exit = useCallback(() => {
+    setPersistedEngine(null)
     setGameState(null)
     setGameEngine(null)
-  }, [setGameState])
+  }, [setPersistedEngine])
 
   if (loading) return <LoadingIndicator />
 
   if (!gameEngine || !gameState) {
-    return <PreGameView onStartGame={handleStartGame} />
+    return <PreGameViewV2 onStartGame={handleStartGame} />
   }
 
   return (
