@@ -157,7 +157,8 @@ export class GameEngine {
 
   static resumeFrom(state: GameState) {
     const engine = new GameEngine(state)
-
+    engine.rules.updateBoardState(engine.gameState)
+    engine.stateUpdated()
     return engine
   }
 }

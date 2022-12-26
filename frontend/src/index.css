@@ -25,3 +25,27 @@ input {
 .separator {
   @apply pb-2 mb-2 border-b;
 }
+
+@keyframes shake-anim {
+  from {
+    transform: rotate(0deg);
+  }
+
+  33% {
+    transform: rotate(-45deg);
+  }
+
+  66% {
+    transform: rotate(45deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.shake {
+  animation-duration: 2s;
+  animation-name: shake-anim;
+  animation-iteration-count: infinite;
+}

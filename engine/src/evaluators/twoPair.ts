@@ -2,7 +2,6 @@
 
 import {Evaluator} from '../Evaluator'
 import {diceValues} from '../misc'
-import {sum} from '../utils/sum'
 import {sameDice} from './sameDice'
 
 const viaFourOfKind = sameDice(4)

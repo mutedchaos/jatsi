@@ -35,7 +35,7 @@ export const ScoreCellContent: React.FC<{x: number; y: number; grid: CellType[];
     border
     min-w-[60px]
     ${!boardElement && 'font-bold'}
-    ${boardElement?.value === 0 && 'bg-red-400'}
+    ${boardElement?.value === 0 && 'text-red-400'}
     ${
       state.currentTurn.throws.length > 0 &&
       boardElement?.selectable &&

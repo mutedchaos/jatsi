@@ -13,6 +13,8 @@ export const CurrentTurn: React.FC = () => {
   const [rolled, setRolled] = useState(false)
   const [rolling, setRolling] = useState(false)
 
+  const [shaking, setShaking] = useState(false)
+
   const activelyRolling = useRef(false)
 
   const diceRefs = [useRef<any>(null), useRef<any>(null), useRef<any>(null), useRef<any>(null), useRef<any>(null)]
@@ -20,11 +22,11 @@ export const CurrentTurn: React.FC = () => {
   const rollDice = useCallback(() => {
     setRolled(true)
     setRolling(true)
+    setShaking(false)
     activelyRolling.current = true
     const results = engine.prepareRoll()
     diceRefs.forEach((dice, i) => {
       if (!state.currentTurn.locked.includes(i)) {
-        console.log('r', i, results[i])
         return dice.current.rollAll([results[i]])
       }
     })
@@ -40,6 +42,9 @@ export const CurrentTurn: React.FC = () => {
     }
   }, [engine, rolled])
 
+  const startShaking = useCallback(() => setShaking(true), [])
+  const stopShaking = useCallback(() => setShaking(false), [])
+
   const allThrowsDone = state.currentTurn.throws.length === state.rules.maxThrows
   const canLock = !allThrowsDone && state.currentTurn.throws.length > 0
   return (
@@ -52,17 +57,18 @@ export const CurrentTurn: React.FC = () => {
         {Array.from({length: 5}).map((_, i) => (
           <div
             key={i}
-            style={{opacity: !rolled && state.currentTurn.throws.length === 0 ? 0.25 : 1}}
+            style={{opacity: !rolled && state.currentTurn.throws.length === 0 ? 0.25 : 1, willChange: 'transform'}}
             onClick={!canLock ? undefined : () => engine.toggleDiceLock(i)}
-            className={!canLock ? '' : 'cursor-pointer'}
+            className={`${!canLock ? '' : 'cursor-pointer'} ${
+              shaking && rolled && !rolling && !state.currentTurn.locked.includes(i) ? 'shake' : ''
+            }`}
           >
-            {engine.latestDice[i]}
             <ReactDice
               rollDone={handleRollDone}
               ref={diceRefs[i]}
               disableIndividual
               numDice={1}
-              faceColor={state.currentTurn.locked.includes(i) ? 'orange' : '#eee'}
+              faceColor={state.currentTurn.locked.includes(i) ? 'orange' : shaking ? '#edd' : '#eee'}
               dotColor="black"
               rollTime={rolled ? 1 : 0}
               defaultRoll={engine.latestDice[i] ?? i + 1}
@@ -70,11 +76,13 @@ export const CurrentTurn: React.FC = () => {
           </div>
         ))}
         <PrimaryButton
+          onMouseEnter={startShaking}
+          onMouseLeave={stopShaking}
           onClick={rollDice}
           className="ml-6 mr-4 min-w-[100px] self-center"
           disabled={rolling || allThrowsDone}
         >
-          Roll
+          Roll {5 - state.currentTurn.locked.length}
         </PrimaryButton>
       </div>
     </div>

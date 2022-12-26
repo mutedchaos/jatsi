@@ -33,7 +33,7 @@ const traditionalTopScore: Evaluator = (_dice, boardState) => {
 const topBonusTraditional: Evaluator = (_dice, boardState) => {
   return {
     selectable: false,
-    value: valueOf(boardState, 'label-topscore') >= 63 ? 50 : 0,
+    value: valueOf(boardState, 'topscore') >= 63 ? 50 : 0,
     valueIfSelected: null,
   }
 }
@@ -77,7 +77,7 @@ const cellGrid = [
   },
 
   {x: 0, y: 7, defaultContent: 'Bonus', stateful: false, id: 'label-bonus', evaluator: null},
-  {x: 1, y: 7, defaultContent: '', stateful: true, id: 'bonus', evaluator: topBonusTraditional},
+  {x: 1, y: 7, defaultContent: '', stateful: true, id: 'bonus', evaluator: topBonusTraditional, evaluateAlways: true},
 
   {x: 0, y: 8, defaultContent: 'Pair', stateful: false, id: 'label-pair', evaluator: null},
   {x: 1, y: 8, defaultContent: '', stateful: true, id: 'pair', evaluator: sameDice(2)},
