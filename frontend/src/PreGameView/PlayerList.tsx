@@ -1,11 +1,9 @@
+import {GameState} from '@jatsi/engine'
 import React, {useCallback, useState} from 'react'
 import {DeleteButton} from '../components/DeleteButton'
 import {SecondaryButton} from '../components/SecondaryButton'
 
-export interface Player {
-  name: string
-  color: string
-}
+export type Player = GameState['players'][number]
 
 interface Props {
   players: Player[]
