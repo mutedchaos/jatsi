@@ -1,10 +1,15 @@
-import React from "react";
+import React from 'react'
 
-export const PrimaryButton: React.FC<
-  React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ className, ...otherProps }) => (
+export const PrimaryButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({className, ...otherProps}) => (
   <button
     {...otherProps}
-    className={`bg-blue-500 p-2 rounded text-white hover:bg-blue-400 active:bg-blue-600 ${className}`}
+    className={`
+      bg-green-500
+      p-2 rounded
+      text-white
+      hover:bg-green-400
+      active:bg-green-600
+      disabled:bg-gray-300
+      ${className}`}
   />
-);
+)

@@ -7,13 +7,21 @@ h1 {
 }
 
 h2 {
-  @apply text-xl;
+  font-size: 25px;
 }
 
 h3 {
+  @apply text-xl;
+}
+
+h4 {
   @apply text-lg;
 }
 
 input {
   @apply p-2 border-gray-300 border m-1 rounded;
+}
+
+.separator {
+  @apply pb-2 mb-2 border-b;
 }
