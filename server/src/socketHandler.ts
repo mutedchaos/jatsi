@@ -25,6 +25,22 @@ export async function attachSocketListeners(socket: ServerSocket, name: string, 
     return log.info('> ', msg, betterArg)
   })
 
+  socket.on('myNameIs', async (newName) => {
+    if (typeof newName !== 'string') throw new Error('Invalid arg')
+    await handleErrors(async () => {
+      const player = await players.updateViaMutating(id, (player) => {
+        player.name = newName
+      })
+      if (player.gameId) {
+        await rooms.updateViaMutating(player.gameId, (room) => {
+          const roomPlayer = room.players.find((p) => p.playerId === id)
+          if (roomPlayer) roomPlayer.name = newName
+        })
+        await publishRoomStatus(player.gameId)
+      }
+    })
+  })
+
   socket.on('createRoom', async () => {
     await handleErrors(() => createRoom(socket, id))
   })

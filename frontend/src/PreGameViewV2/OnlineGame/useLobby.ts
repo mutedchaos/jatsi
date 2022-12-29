@@ -25,6 +25,10 @@ export function useLobby(lobbyCode: null | string, name: string, onStartGame: (e
   }, [])
 
   useEffect(() => {
+    socket.emit('myNameIs', name)
+  }, [name, socket])
+
+  useEffect(() => {
     return () => {
       socket.disconnect()
     }
