@@ -23,11 +23,22 @@ export const GameViewLogic: React.FC = () => {
     [setPersistedEngine]
   )
 
+  const exit = useCallback(() => {
+    setPersistedEngine(null)
+    setGameState(null)
+    setGameEngine(null)
+    setLoading(false)
+  }, [setPersistedEngine])
+
   const updateGameState = useCallback(
-    (state: GameState) => {
-      setGameState(JSON.parse(JSON.stringify(state)))
+    (state: GameState | null) => {
+      if (!state) {
+        exit()
+      } else {
+        setGameState(JSON.parse(JSON.stringify(state)))
+      }
     },
-    [setGameState]
+    [exit]
   )
 
   useEffect(() => {
@@ -55,12 +66,6 @@ export const GameViewLogic: React.FC = () => {
       gameEngine.offStateUpdated(updateGameState)
     }
   }, [gameEngine, updateGameState])
-
-  const exit = useCallback(() => {
-    setPersistedEngine(null)
-    setGameState(null)
-    setGameEngine(null)
-  }, [setPersistedEngine])
 
   if (loading) return <LoadingIndicator />
 

@@ -1,5 +1,5 @@
-import {Evaluator} from '../Evaluator'
-import { sum } from '../utils/sum'
+import {Evaluator} from '../Evaluator.js'
+import { sum } from '../utils/sum.js'
 
 export function straight(startingFrom: number): Evaluator {
   const expectedDice = [1, 2, 3, 4, 5].map((x) => x + startingFrom - 1)

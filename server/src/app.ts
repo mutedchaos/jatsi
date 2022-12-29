@@ -1,10 +1,10 @@
 import {randomUUID} from 'crypto'
 import {createServer} from 'http'
 import {Server} from 'socket.io'
-import {log} from './log'
-import {attachSocketListeners} from './socketHandler'
+import {log} from './log.js'
+import {attachSocketListeners} from './socketHandler.js'
 import {ClientToServerEvents, ServerToClientEvents} from '@jatsi/engine'
-import {setIO} from './io'
+import {setIO} from './io.js'
 
 const httpServer = createServer()
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
@@ -17,9 +17,10 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
 io.on('connection', async (socket) => {
   try {
     const {name, id} = socket.handshake.query as {name?: string; id?: string}
+    if (id === 'undefined' || id === 'null') throw new Error('Your id cannot be the string undefined or null')
     const realId = id ?? randomUUID()
-    console.log('Connection for ', {name, id, realId})
-    attachSocketListeners(socket, name ?? randomUUID(), realId)
+    log.info('Connection for ', {name, id, realId})
+    await attachSocketListeners(socket, name ?? randomUUID(), realId)
     if (!id) {
       socket.emit('yourIdIs', realId)
     }

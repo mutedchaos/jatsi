@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, {useCallback, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useRef, useState} from 'react'
 import {useGameEngine, useGameState} from '../gameContext'
 import ReactDice from 'react-dice-complete'
 import 'react-dice-complete/dist/react-dice-complete.css'
 import {PrimaryButton} from '../components/PrimaryButton'
 import {getLatestDice} from '../business/getLatestDice'
+import {LocalPlayerTurnOnly} from '../business/LocalPlayerTurnOnly'
+import {useIsLocalPlayerTurn} from '../business/useIsLocalPlayerTurn'
 
 export const CurrentTurn: React.FC = () => {
   const state = useGameState()
@@ -34,6 +36,19 @@ export const CurrentTurn: React.FC = () => {
     if (state.currentTurn.locked.length === 5) handleRollDone()
     // eslint-disable-next-line react-hooks/exhaustive-deps -- diceRefs is an odd one here
   }, [engine, state])
+
+  const isLocalPlayerTurn = useIsLocalPlayerTurn()
+  useEffect(() => {
+    if (!isLocalPlayerTurn && state.currentTurn.preparedThrow.length) {
+      setRolled(true)
+      diceRefs.forEach((dice, i) => {
+        if (!state.currentTurn.locked.includes(i)) {
+          return dice.current.rollAll([state.currentTurn.preparedThrow[i]])
+        }
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- diceRefs is an odd one here
+  }, [isLocalPlayerTurn, state.currentTurn.preparedThrow.length])
 
   const handleRollDone = useCallback(() => {
     if (rolled && activelyRolling.current) {
@@ -76,15 +91,17 @@ export const CurrentTurn: React.FC = () => {
             />
           </div>
         ))}
-        <PrimaryButton
-          onMouseEnter={startShaking}
-          onMouseLeave={stopShaking}
-          onClick={rollDice}
-          className="ml-6 mr-4 min-w-[100px] self-center"
-          disabled={rolling || allThrowsDone}
-        >
-          Roll {5 - state.currentTurn.locked.length}
-        </PrimaryButton>
+        <LocalPlayerTurnOnly>
+          <PrimaryButton
+            onMouseEnter={startShaking}
+            onMouseLeave={stopShaking}
+            onClick={rollDice}
+            className="ml-6 mr-4 min-w-[100px] self-center"
+            disabled={rolling || allThrowsDone}
+          >
+            Roll {5 - state.currentTurn.locked.length}
+          </PrimaryButton>
+        </LocalPlayerTurnOnly>
       </div>
     </div>
   )

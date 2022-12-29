@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:server:dev": "npm run --workspace=server dev",
+    "start:frontend": "npm run --workspace=frontend dev",
+    "start:engine:dev": "npm run --workspace=engine dev"
   },
   "author": "",
   "license": "ISC",

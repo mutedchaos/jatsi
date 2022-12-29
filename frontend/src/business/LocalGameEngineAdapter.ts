@@ -72,6 +72,10 @@ export class LocalGameEngineAdapter extends GameEngineAdapter {
   offStateUpdated(handler: (gameState: GameState) => void): void {
     this.gameEngine.offStateUpdated(handler)
   }
+
+  isLocalPlayerAllowedToAct(): boolean {
+    return true
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

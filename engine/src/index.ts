@@ -1,2 +1,2 @@
-export * from './GameEngine'
-export * from './SocketEvents'
+export * from './GameEngine.js'
+export * from './SocketEvents.js'

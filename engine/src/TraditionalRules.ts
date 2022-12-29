@@ -1,13 +1,13 @@
-import {Evaluator} from './Evaluator'
-import {anyDice} from './evaluators/anyDice'
-import {fullHouse} from './evaluators/fullHouse'
-import {sameDice} from './evaluators/sameDice'
-import {specificDice} from './evaluators/specificDice'
-import {straight} from './evaluators/straight'
-import {twoPair} from './evaluators/twoPair'
-import {Cell, GameState} from './GameEngine'
-import {CellType, Rules} from './Rules'
-import {sum} from './utils/sum'
+import {Evaluator} from './Evaluator.js'
+import {anyDice} from './evaluators/anyDice.js'
+import {fullHouse} from './evaluators/fullHouse.js'
+import {sameDice} from './evaluators/sameDice.js'
+import {specificDice} from './evaluators/specificDice.js'
+import {straight} from './evaluators/straight.js'
+import {twoPair} from './evaluators/twoPair.js'
+import {Cell, GameState} from './GameEngine.js'
+import {CellType, Rules} from './Rules.js'
+import {sum} from './utils/sum.js'
 
 interface ExtendedCellType extends CellType {
   evaluator: Evaluator | null

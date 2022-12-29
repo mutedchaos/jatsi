@@ -1,5 +1,5 @@
-import {Evaluator} from '../Evaluator'
-import {sum} from '../utils/sum'
+import {Evaluator} from '../Evaluator.js'
+import {sum} from '../utils/sum.js'
 
 export function anyDice(numberOfDice: number): Evaluator {
   return (dice) => {

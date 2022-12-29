@@ -1,5 +1,5 @@
-import {CellType, Rules} from './Rules'
-import {TraditionalRules} from './TraditionalRules'
+import {CellType, Rules} from './Rules.js'
+import {TraditionalRules} from './TraditionalRules.js'
 
 export interface Cell {
   id: string
@@ -17,6 +17,7 @@ export enum GamePhase {
 export interface Player {
   name: string
   color: string
+  playerId: string | null // only needed for online games
 }
 
 export interface GameState {
@@ -32,6 +33,7 @@ export interface GameState {
     player: number // index
     throws: number[][]
     locked: number[]
+    preparedThrow: number[]
   }
 }
 
@@ -46,8 +48,6 @@ export class GameEngine {
   private updateListeners: UpdateListener[] = []
   public readonly rules: Rules
 
-  private nextRoll: number[] = []
-
   constructor(initialState: Pick<GameState, 'players' | 'rules'> | GameState) {
     this.rules = new rulesByVariant[initialState.rules.variant]()
     this.gameState = {
@@ -58,6 +58,7 @@ export class GameEngine {
         player: 0,
         throws: [],
         locked: [],
+        preparedThrow: [],
       },
       ...initialState,
     }
@@ -85,6 +86,7 @@ export class GameEngine {
       player: (this.gameState.currentTurn.player + 1) % this.gameState.players.length,
       throws: [],
       locked: [],
+      preparedThrow: [],
     }
     this.rules.updateBoardState(this.gameState)
 
@@ -104,9 +106,9 @@ export class GameEngine {
     if (this.gameState.currentTurn.throws.length >= this.gameState.rules.maxThrows)
       throw new Error('Max throws reached')
 
-    if (this.nextRoll.length) throw new Error('A roll has already been prepared')
+    if (this.gameState.currentTurn.preparedThrow.length) throw new Error('A roll has already been prepared')
 
-    this.nextRoll = [
+    this.gameState.currentTurn.preparedThrow = [
       this.gameState.currentTurn.locked.includes(0) ? this.latestDice[0] : Math.floor(Math.random() * 6) + 1,
       this.gameState.currentTurn.locked.includes(1) ? this.latestDice[1] : Math.floor(Math.random() * 6) + 1,
       this.gameState.currentTurn.locked.includes(2) ? this.latestDice[2] : Math.floor(Math.random() * 6) + 1,
@@ -114,14 +116,17 @@ export class GameEngine {
       this.gameState.currentTurn.locked.includes(4) ? this.latestDice[4] : Math.floor(Math.random() * 6) + 1,
     ]
 
-    return [...this.nextRoll]
+    this.stateUpdated()
+    return [...this.gameState.currentTurn.preparedThrow]
   }
 
   public finishRoll() {
-    if (!this.nextRoll.length) this.prepareRoll() // allow not preparing
+    if (!this.gameState.currentTurn.preparedThrow.length) {
+      throw new Error('Roll must be prepared')
+    }
 
-    this.gameState.currentTurn.throws.push(this.nextRoll)
-    this.nextRoll = []
+    this.gameState.currentTurn.throws.push(this.gameState.currentTurn.preparedThrow)
+    this.gameState.currentTurn.preparedThrow = []
 
     this.rules.updateBoardState(this.gameState)
     this.stateUpdated()

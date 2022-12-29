@@ -1,4 +1,4 @@
-import {Evaluator} from '../Evaluator'
+import {Evaluator} from '../Evaluator.js'
 
 export function specificDice(diceValue: number): Evaluator {
   return (dice) => ({

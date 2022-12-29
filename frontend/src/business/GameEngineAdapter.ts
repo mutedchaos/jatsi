@@ -11,7 +11,8 @@ export abstract class GameEngineAdapter {
   abstract tryResume(): Promise<void>
   abstract start(): Promise<void>
 
-  abstract onStateUpdated(handler: (gameState: GameState) => void): void
-  abstract offStateUpdated(handler: (gameState: GameState) => void): void
+  abstract onStateUpdated(handler: (gameState: GameState | null) => void): void
+  abstract offStateUpdated(handler: (gameState: GameState | null) => void): void
   abstract getGameState(): GameState
+  abstract isLocalPlayerAllowedToAct(): boolean
 }

@@ -26,7 +26,7 @@ export const PlayerList: React.FC<Props> = ({players, onAddPlayer, onRemovePlaye
   const handleAdd = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
-      onAddPlayer({name: newPlayerName, color: pickColor()})
+      onAddPlayer({name: newPlayerName, color: pickColor(), playerId: null})
       setNewPlayerName('')
     },
     [newPlayerName, onAddPlayer, pickColor]

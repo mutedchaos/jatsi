@@ -1,8 +1,8 @@
 // TODO: There might be some rule variants that should be considered here
 
-import {Evaluator} from '../Evaluator'
-import {diceValues} from '../misc'
-import {sameDice} from './sameDice'
+import {Evaluator} from '../Evaluator.js'
+import {diceValues} from '../misc.js'
+import {sameDice} from './sameDice.js'
 
 const viaFourOfKind = sameDice(4)
 export const twoPair: Evaluator = (dice, boardState) => {
@@ -20,6 +20,6 @@ export const twoPair: Evaluator = (dice, boardState) => {
   return {
     selectable: true,
     value: null,
-    valueIfSelected: lowPair*2 + highPair*2
+    valueIfSelected: lowPair * 2 + highPair * 2,
   }
 }

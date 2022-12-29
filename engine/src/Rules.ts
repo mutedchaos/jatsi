@@ -1,4 +1,4 @@
-import {GameState} from './GameEngine'
+import {GameState} from './GameEngine.js'
 
 export interface CellType {
   id: string

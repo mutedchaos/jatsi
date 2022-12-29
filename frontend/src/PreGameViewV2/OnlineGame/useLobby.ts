@@ -2,10 +2,11 @@ import {GameEngineAdapter} from '../../business/GameEngineAdapter'
 import {io, Socket} from 'socket.io-client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useLocalStoragePersistedState} from '../../hooks/useLocalStoragePersistedState'
-import {ClientToServerEvents, Player, ServerToClientEvents} from '@jatsi/engine'
+import {ClientToServerEvents, Player, RoomInfo, ServerToClientEvents} from '@jatsi/engine'
+import {SocketIoGameEngineAdapter} from '../../business/SocketIoGameEngineAdapter'
 
 export function useLobby(lobbyCode: null | string, name: string, onStartGame: (engine: GameEngineAdapter) => void) {
-  const [myId, setMyId] = useLocalStoragePersistedState<string | undefined>('online-id', undefined)
+  const [myId, setMyId] = useLocalStoragePersistedState<{id: string | null}>('online-id', {id: null})
   const [createdLobbyCode, setCreatedLobbyCode] = useState('')
   const [connected, setConnected1] = useState(false)
   const [players, setPlayers] = useState<Player[]>([])
@@ -14,7 +15,7 @@ export function useLobby(lobbyCode: null | string, name: string, onStartGame: (e
       reconnectionDelayMax: 10000,
       query: {
         name,
-        myId,
+        ...(myId.id ? {id: myId.id} : {}),
       },
 
       autoConnect: false,
@@ -37,26 +38,31 @@ export function useLobby(lobbyCode: null | string, name: string, onStartGame: (e
   }, [])
 
   useEffect(() => {
-    socket.on('connect', setConnected)
-    socket.on('connect_error', (err) => alert(err.message))
-    socket.on('disconnect', setDisconnected)
-    socket.connect()
-    return () => {
-      socket.off('connect', setConnected)
-      socket.off('disconnect', setDisconnected)
-    }
-  }, [setConnected, setDisconnected, socket])
+    socket.on('yourIdIs', (id) => {
+      setMyId({id})
+    })
+    socket.on('error', (message) => {
+      alert(message)
+    })
+  }, [setMyId, socket])
 
   useEffect(() => {
-    socket.on('yourIdIs', (id) => {
-      setMyId(id)
-    })
-
-    socket.on('roomInfo', (roomInfo) => {
-      if (!lobbyCode) setCreatedLobbyCode(roomInfo.code)
+    const hook = (roomInfo: RoomInfo) => {
+      if (!lobbyCode) setCreatedLobbyCode(roomInfo.id)
       setPlayers(roomInfo.players)
-    })
-  }, [lobbyCode, setMyId, socket])
+
+      //console.log('x', name, myId, Boolean(roomInfo.gameState))
+
+      if (roomInfo.gameState) {
+        if (!myId.id) throw new Error('Invalid state')
+        onStartGame(new SocketIoGameEngineAdapter({name, playerId: myId.id}))
+      }
+    }
+    socket.on('roomInfo', hook)
+    return () => {
+      socket.off('roomInfo', hook)
+    }
+  }, [lobbyCode, myId, name, onStartGame, socket])
 
   useEffect(() => {
     if (!connected) return
@@ -67,10 +73,25 @@ export function useLobby(lobbyCode: null | string, name: string, onStartGame: (e
     }
   }, [connected, lobbyCode, socket])
 
+  const startGame = useCallback(() => {
+    socket.emit('startGame')
+  }, [socket])
+
+  useEffect(() => {
+    socket.on('connect', setConnected)
+    socket.on('connect_error', (err) => alert(err.message))
+    socket.on('disconnect', setDisconnected)
+    socket.connect()
+    return () => {
+      socket.off('connect', setConnected)
+      socket.off('disconnect', setDisconnected)
+    }
+  }, [setConnected, setDisconnected, socket])
+
   return {
     loading: (!lobbyCode && !createdLobbyCode) || !players.length,
     players,
     code: createdLobbyCode || lobbyCode,
-    startGame: () => null as any,
+    startGame,
   }
 }

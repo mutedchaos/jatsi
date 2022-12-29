@@ -1,5 +1,5 @@
-import {Evaluator} from '../Evaluator'
-import {diceValues} from '../misc'
+import {Evaluator} from '../Evaluator.js'
+import {diceValues} from '../misc.js'
 
 export function sameDice(numberOfDice: number, scoreOverride?: number): Evaluator {
   return (dice) => {

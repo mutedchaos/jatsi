@@ -23,8 +23,8 @@ export const PreGameViewV2: React.FC<Props> = ({onStartGame}) => {
       <h2>How do you want to play?</h2>
       <div>
         <label>
-          <input type="radio" checked={gameType === 'local'} onClick={setLocal} name="type" value="local" /> Locally, on
-          this computer/phone/device!
+          <input type="radio" checked={gameType === 'local'} onChange={setLocal} name="type" value="local" /> Locally,
+          on this computer/phone/device!
         </label>
       </div>
       <div>
@@ -32,7 +32,7 @@ export const PreGameViewV2: React.FC<Props> = ({onStartGame}) => {
           <input
             type="radio"
             checked={gameType === 'online-host'}
-            onClick={setOnlineHost}
+            onChange={setOnlineHost}
             name="type"
             value="online-host"
           />
@@ -44,7 +44,7 @@ export const PreGameViewV2: React.FC<Props> = ({onStartGame}) => {
           <input
             type="radio"
             checked={gameType === 'online-join'}
-            onClick={setOnlineJoin}
+            onChange={setOnlineJoin}
             name="type"
             value="online-join"
           />

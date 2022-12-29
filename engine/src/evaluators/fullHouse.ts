@@ -1,7 +1,7 @@
 // TODO: There might be some rule variants that should be considered here
 
-import {Evaluator} from '../Evaluator'
-import {sum} from '../utils/sum'
+import {Evaluator} from '../Evaluator.js'
+import {sum} from '../utils/sum.js'
 
 export const fullHouse: Evaluator = (dice) => {
   const sortedDice = [...dice].sort()

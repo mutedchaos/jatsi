@@ -1,5 +1,6 @@
 import {CellType} from '@jatsi/engine/dist/Rules'
 import React, {useCallback} from 'react'
+import { useIsLocalPlayerTurn } from '../business/useIsLocalPlayerTurn';
 import {useGameEngine, useGameState} from '../gameContext'
 
 export const ScoreCellContent: React.FC<{x: number; y: number; grid: CellType[]; player: number}> = ({
@@ -26,11 +27,11 @@ export const ScoreCellContent: React.FC<{x: number; y: number; grid: CellType[];
       ? undefined
       : boardElement?.valueIfSelected
 
-  boardElement?.valueIfSelected || ''
+  const isLocalPlayerTurn = useIsLocalPlayerTurn()
 
   return (
     <td
-      onClick={boardElement?.selectable ? select : undefined}
+      onClick={boardElement?.selectable && isLocalPlayerTurn ? select : undefined}
       className={`
     border
     min-w-[60px]
@@ -43,7 +44,7 @@ export const ScoreCellContent: React.FC<{x: number; y: number; grid: CellType[];
       'bg-red-100 hover:bg-red-200'
     }
     ${boardElement?.selectable && boardElement?.valueIfSelected && 'bg-green-300 hover:bg-green-400'}
-    ${boardElement?.selectable && 'cursor-pointer'}
+    ${boardElement?.selectable && isLocalPlayerTurn && 'cursor-pointer'}
   `}
     >
       {boardElement?.value ?? effectiveValueIfSelected ?? gridElement?.defaultContent}

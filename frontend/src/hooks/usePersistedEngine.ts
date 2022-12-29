@@ -1,9 +1,13 @@
 import {useCallback, useMemo} from 'react'
 import {GameEngineAdapter} from '../business/GameEngineAdapter'
 import {LocalGameEngineAdapter} from '../business/LocalGameEngineAdapter'
+import {SocketIoGameEngineAdapter} from '../business/SocketIoGameEngineAdapter'
 import {useLocalStoragePersistedState} from './useLocalStoragePersistedState'
 
-const knownAdapters = [{key: 'local' as const, adapter: LocalGameEngineAdapter}]
+const knownAdapters = [
+  {key: 'local' as const, adapter: LocalGameEngineAdapter},
+  {key: 'socketio' as const, adapter: SocketIoGameEngineAdapter},
+]
 
 type KnownAdapter = typeof knownAdapters[number]['key']
 
