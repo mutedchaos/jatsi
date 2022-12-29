@@ -76,6 +76,10 @@ export class LocalGameEngineAdapter extends GameEngineAdapter {
   isLocalPlayerAllowedToAct(): boolean {
     return true
   }
+
+  async exit(): Promise<void> {
+    // do nothing
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

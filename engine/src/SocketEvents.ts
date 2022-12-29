@@ -15,6 +15,7 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
+  exit: () => void
   myNameIs: (name: string) => void
   createRoom: () => void
   joinRoom: (roomCode: string) => void

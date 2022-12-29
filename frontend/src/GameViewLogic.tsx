@@ -23,12 +23,13 @@ export const GameViewLogic: React.FC = () => {
     [setPersistedEngine]
   )
 
-  const exit = useCallback(() => {
+  const exit = useCallback(async () => {
+    await gameEngine?.exit()
     setPersistedEngine(null)
     setGameState(null)
     setGameEngine(null)
     setLoading(false)
-  }, [setPersistedEngine])
+  }, [gameEngine, setPersistedEngine])
 
   const updateGameState = useCallback(
     (state: GameState | null) => {

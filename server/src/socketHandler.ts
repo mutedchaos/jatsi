@@ -7,6 +7,7 @@ import {players, rooms} from './persistence.js'
 import {startGame} from './logic/startGame.js'
 import {publishRoomStatus} from './publishRoomStatus.js'
 import {runEngineOperation} from './logic/runEngineOperation.js'
+import {GamePhase} from '@jatsi/engine'
 
 export async function attachSocketListeners(socket: ServerSocket, name: string, id: string) {
   const player = await players.get(id)
@@ -95,6 +96,26 @@ export async function attachSocketListeners(socket: ServerSocket, name: string, 
         await socket.emit('rollPrepared', roll)
       })
     )
+  )
+
+  socket.on('exit', () =>
+    handleErrors(async () => {
+      const player = await players.get(id)
+      if (!player) throw new Error('Player not found')
+      const {gameId} = player
+      await players.updateViaMutating(id, (player) => {
+        player.gameId = null
+      })
+      if (gameId) {
+        const room = await rooms.get(gameId)
+        if (room && room.gameState?.phase !== GamePhase.GAMEOVER) {
+          await rooms.updateViaMutating(gameId, (room) => {
+            if (room.gameState) room.gameState.phase = GamePhase.GAMEOVER
+          })
+          await publishRoomStatus(gameId)
+        }
+      }
+    })
   )
 
   async function handleErrors(fn: () => Promise<void>) {

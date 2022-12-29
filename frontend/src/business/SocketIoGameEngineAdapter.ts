@@ -135,4 +135,9 @@ export class SocketIoGameEngineAdapter extends GameEngineAdapter {
     if (!this.latestState) return false
     return this.latestState.players[this.latestState.currentTurn.player].playerId === this.data?.playerId
   }
+
+  async exit(): Promise<void> {
+    await this.socket.emit('exit')
+    await this.socket.disconnect()
+  }
 }

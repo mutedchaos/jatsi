@@ -15,4 +15,5 @@ export abstract class GameEngineAdapter {
   abstract offStateUpdated(handler: (gameState: GameState | null) => void): void
   abstract getGameState(): GameState
   abstract isLocalPlayerAllowedToAct(): boolean
+  abstract exit(): Promise<void>
 }
